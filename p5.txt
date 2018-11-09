@@ -40,8 +40,10 @@ La máquina tiene la IP 192.168.1.34, que es una IP privada ya que está en el r
 correspondiente al protocolo TCP y UDP.
 * ¿Cuál de los dos es mayor? ¿Tiene esto sentido si estamos hablando
 de una aplicación que transmite en tiempo real?
+Es mayor el tráfico en UDP, y tiene sentido ya que una aplicación en tiempo real usa este protocolo al ser más eficaz en el tiempo real, evitando reenvíos como TCP
 * ¿Qué otros protocolos podemos ver en la jerarquı́a de protocolos?
 ¿Cuales crees que son señal y cuales ruido?
+Los protocolos con señal son SIP y RTP, y RTCP que es necesario para el uso de RTP. Después hay otros protocolos como DNS, ICMP o ARP que son ruido.
 
 4. Observa por encima el flujo de tramas en el menú de Statistics en IO
 Graphs. La captura que estamos viendo incluye desde la inicialización
