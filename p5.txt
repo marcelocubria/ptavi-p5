@@ -57,9 +57,12 @@ Los paquetes con RTP se envían en los segundos 17 a 21 y 23 a 38
 
 5. Analiza las dos primeras tramas de la captura.
 * ¿Qué servicio es el utilizado en estas tramas?
+Son paquetes de DNS, que es un servicio donde el servidor responde al cliente con la dirección IP del dominio que el cliente pide.
 * ¿Cuál es la dirección IP del servidor de nombres del ordenador
 que ha lanzado Ekiga?
+La dirección IP del servidor DNS es 80.58.61.250
 * ¿Qué dirección IP (de ekiga.net) devuelve el servicio de nombres?
+La respuesta contiene la dirección IP 86.64.162.35
 
 6. A continuación, hay más de una docena de tramas TCP/HTTP.
 * ¿Podrı́as decir la URL que se está pidiendo?
