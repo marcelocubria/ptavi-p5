@@ -66,16 +66,22 @@ La respuesta contiene la dirección IP 86.64.162.35
 
 6. A continuación, hay más de una docena de tramas TCP/HTTP.
 * ¿Podrı́as decir la URL que se está pidiendo?
+Está pidiendo la url http://ekiga.net/ip/
 * ¿Qué user agent (UA) la está pidiendo?
+La está pidiendo el UA en 192.168.1.34
 * ¿Qué devuelve el servidor?
+El servidor está respondiendo con una dirección IP, la 83.36.48.212
 * Si lanzamos el navegador web, por ejemplo, Mozilla Firefox, y
 vamos a la misma URL, ¿qué recibimos? ¿Qué es, entonces, lo
 que está respondiendo el servidor?
+Está respondiendo con la IP con la que el servidor nos ve, que no corresponde con la nuestra, por lo tanto significa que estamos tras una red NAT
 
 7. Hasta la trama 45 se puede observar una secuencia de tramas del
 protocolo STUN.
 * ¿Por qué se hace uso de este protocolo?
+Para conocer el tipo de red NAT tras el que se encuentra una máquina, ya que puede haber problemas en el envío de paquetes hacia el usuario que usa NAT.
 * ¿Podrı́as decir si estamos tras un NAT o no?
+Al usar STUN, sabemos que estamos tras un NAT.
 
 8. La trama 46 es la primera trama SIP. En un entorno como el de Internet, lo habitual es desconocer la dirección IP de la otra parte al
 realizar una llamada. Por eso, todo usuario registra su localización en
@@ -83,20 +89,28 @@ un servidor Registrar. El Registrar guarda información sobre los
 usuarios en un servidor de localización que puede ser utilizado para
 localizar usuarios.
 * ¿Qué dirección IP tiene el servidor Registrar?
+Tiene la dirección 86.64.162.35
 * ¿A qué puerto (del servidor Registrar) se envı́an los paquetes
 SIP?
+Se envían al puerto 5060
 * ¿Qué método SIP utiliza el UA para registrarse?
+Usa el método REGISTER
 * Además de REGISTER, ¿podrı́as decir qué instrucciones SIP entiende el UA?
+Entiende las instrucciones INVITE, ACK, BYE, OPTIONS, CANCEL
 [Al terminar el ejercicio es recomendable hacer commit de los ficheros modificados]
 
 9. Fijémonos en las tramas siguientes a la número 46:
 * ¿Se registra con éxito en el primer intento?
+No, no se registra correctamente en el primer intento.
 * ¿Cómo sabemos si el registro se ha realizado correctamente o no?
+Sabemos que no se ha realizado correctmente con la respuestas del servidor 401 Unauthorized
 * ¿Podrı́as identificar las diferencias entre el primer intento y el
 segundo de registro? (fı́jate en el tamaño de los paquetes y mira
 a qué se debe el cambio)
+En el segundo tenemos el campo Authorization, donde incluye información como el usuario, realm y nonce para poder registrarse.
 * ¿Cuánto es el valor del tiempo de expiración de la sesión? Indica
 las unidades.
+La sesión expira en 3600 segundos.
 
 10. Una vez registrados, podemos efectuar una llamada. Vamos a probar
 con el servicio de eco de Ekiga que nos permite comprobar si nos
@@ -104,56 +118,82 @@ hemos conectado correctamente. El servicio de eco tiene la dirección
 sip:500@ekiga.net. Veamos el INVITE de cerca.
 * ¿Puede verse el nombre del que efectúa la llamada, ası́ como su
 dirección SIP?
+Sí, llama Gregorio Robles desde la dirección grex@ekiga.net
 * ¿Qué es lo que contiene el cuerpo de la trama? ¿En qué formato/protocolo está?
+Contiene datos en el protocolo SDP, sobre todo atributos sobre diferentes medios audiovisuales.
 * ¿Tiene éxito el primer intento? ¿Cómo lo sabes?
+No tiene éxito, que se puede ver por la respuesta 407 Proxy Authentication required.
 * ¿En qué se diferencia el segundo INVITE más abajo del primero?
 ¿A qué crees que se debe esto?
+En el segundo mensaje incluye el campo Proxy-Authorization
 
 11. Una vez conectado, estudia el intercambio de tramas.
 * ¿Qué protocolo(s) se utiliza(n)? ¿Para qué sirven estos protocolos?
+Se utiliza el protocolo RTP, que sirve para el transporte de datos multimedia en UDP, y H261, que es un formato de codificación de vídeo.
 * ¿Cuál es el tamaño de paquete de los mismos?
+El tamaño de los paquetes con el protocolo RTP es de 214 bytes.
 * ¿Se utilizan bits de padding?
+No se utilizan bits de padding.
 * ¿Cuál es la periodicidad de los paquetes (en origen; nota que la
 captura es en destino)?
+En origen se envía un paquete cada 160bytes, o 20ms
 * ¿Cuántos bits/segundo se envı́an?
+Si cada 20ms se envían 1560bytes (payload), se tiene una velocidad de 64kbps
 [Al terminar el ejercicio es recomendable hacer commit de los ficheros modificados]
 
 12. Vamos a ver más a fondo el intercambio RTP. En Telephony hay una
 opción RTP. Empecemos mirando los flujos RTP.
 * ¿Cuántos flujos hay? ¿por qué?
+Hay dos flujos diferentes, ya que algunos van al puerto 12440 y otros al 19062
 * ¿Cuántos paquetes se pierden?
+Se pierde un paquete en reverse
 * ¿Cuál es el valor máximo del delta? ¿Y qué es lo que significa el
 valor de delta?
+El valor máximo de Delta es de 1290.44ms, esto indica la diferencia máxima de tiempo entre dos paquetes en algún momento de la comunicación.
 * ¿Cuáles son los valores de jitter (medio y máximo)? ¿Qué
 quiere decir eso? ¿Crees que estamos ante una conversación de
 calidad?
+El valor medio del jitter es de 42.50ms y el máximo de 119.64ms. Visto el valor medio, se podría decir que estamos en una conversación de calidad, ya que el valor no es elevado.
 
 13. Elige un paquete RTP de audio. Analiza el flujo de audio en Telephony
 -> RTP -> Stream Analysis.
 * ¿Cuánto valen el delta y el jitter para el primer paquete que
 ha llegado?
+Para el primer paquete la delta y el jitter valen 0.
 * ¿Podemos saber si éste es el primer paquete que nos han enviado?
+No, solo sabemos que es el primero que nos ha llegado, ya que el numero de secuencia es aleatorio y no sabemos cual debería ser el primero.
 * Los valores de jitter son menores de 10ms hasta un paquete
 dado. ¿Cuál?
+En el 247 el jitter aumenta hasta 38,82ms
 * ¿A qué se debe el cambio tan brusco del jitter?
+A un cambio del ancho de banda, haciendo que el receptor reciba los siguientes paquetes de golpe, con el mismo jitter pero diferente delta.
 * ¿Es comparable el cambio en el valor de jitter con el del delta?
 ¿Cual es más grande?
+En el paquete 247 es mucho más alta la delta, a causa del buffer que se crea por el cambio de ancho de banda.
+
 
 14. En Telephony selecciona el menú VoIP calls. Verás que se lista la
 llamada de voz IP capturada en una ventana emergente. Selecciona
 esa llamada y pulsa el botón Graph.
 * ¿Cuánto dura la conversación?
+Dura 24 segundos.
 * ¿Cuáles son sus SSRC? ¿Por qué hay varios SSRCs? ¿Hay CSRCs?
 
 15. Identifica la trama donde se finaliza la conversación.
 * ¿Qué método SIP se utiliza?
+Se utiliza el método BYE
 * ¿En qué trama(s)?
+En las tramas 924, 925, 927 y 933
 * ¿Por qué crees que se envı́a varias veces?
+Lo reenvía al no recibir el ACK del servidor
 
 16. Finalmente, se cierra la aplicación de VozIP.
 * ¿Por qué aparece una instrucción SIP del tipo REGISTER?
+Porque al no haber expirado el tiempo que el servidor guarda información sobre el cliente, este envía un REGISTER con Expires igual a 0 para ser eliminado.
 * ¿En qué trama sucede esto?
+En la trama 952
 * ¿En qué se diferencia con la instrucción que se utilizó con anterioridad (al principio de la sesión)?
+En el valor de Expires.
 [Al terminar el ejercicio es recomendable hacer commit de los ficheros modificados]
 
 Captura de una sesión SIP
